@@ -16,7 +16,7 @@ import UserCard from "./common/UserCard";
 
 const Home: React.FC = () => {
   const dispatch = useDispatch();
-  const [searchText, setSearchText] = useState<string>("vinaygupta98");
+  const [searchText, setSearchText] = useState<string>("");
   const { users, total_count, loading } = useSelector((state: any) => ({
     users: state.users.items,
     total_count: state.users.total_count,
