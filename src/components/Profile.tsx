@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
-import { Breadcrumb, BreadcrumbItem, Row, Spinner } from "reactstrap";
+import { Breadcrumb, BreadcrumbItem, Spinner } from "reactstrap";
 import { GetUserProfile, GetUserRepos } from "../redux/actions";
 import RepoCard from "./common/RepoCard";
 import UserProfileCard from "./common/UserProfileCard";

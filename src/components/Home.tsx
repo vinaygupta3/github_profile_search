@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  createSearchParams,
-  Link,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { createSearchParams, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   Badge,
   Button,
@@ -14,15 +9,11 @@ import {
   Form,
   FormGroup,
   Input,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
   Spinner,
 } from "reactstrap";
 import { GetSearchUsers } from "../redux/actions";
-import UserCard from "./common/UserCard";
-import { toast } from "react-toastify";
 import PaginationComponent from "./common/PaginationComponent";
+import UserCard from "./common/UserCard";
 
 const Home: React.FC = () => {
   const location = useLocation();

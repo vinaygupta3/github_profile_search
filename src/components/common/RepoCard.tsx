@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Card, CardTitle, Col } from "reactstrap";
+import { Card, CardTitle } from "reactstrap";
 
 interface Props {
   name: string;
