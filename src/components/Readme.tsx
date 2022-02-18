@@ -34,9 +34,13 @@ const Readme = () => {
       </div>
       {loading ? (
         <Spinner />
-      ) : (
+      ) : fileData !== null ? (
         <div className='text-white px-5 py-3' style={{ background: "#21262d" }}>
           <ReactMarkdown>{fileData}</ReactMarkdown>
+        </div>
+      ) : (
+        <div className='text-danger px-5 py-3'>
+          <p>No Readme.md File FoundFor this Repo</p>
         </div>
       )}
     </Container>

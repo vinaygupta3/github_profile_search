@@ -5,6 +5,7 @@ import { Breadcrumb, BreadcrumbItem, Row, Spinner } from "reactstrap";
 import { GetUserProfile, GetUserRepos } from "../redux/actions";
 import RepoCard from "./common/RepoCard";
 import UserProfileCard from "./common/UserProfileCard";
+import "./Profile.css";
 
 const Profile = () => {
   const { userId } = useParams();
@@ -27,21 +28,22 @@ const Profile = () => {
         <BreadcrumbItem active>{userId}</BreadcrumbItem>
       </Breadcrumb>
       <h4>Github Profile Page</h4>
-      {loading && (
+      {loading ? (
         <div className='d-flex justify-content-center align-items-center h-200'>
           <Spinner />
         </div>
+      ) : (
+        <div className='d-flex justify-content-center align-items-center'>
+          {user && <UserProfileCard {...user} />}
+        </div>
       )}
-      <div className='d-flex justify-content-center align-items-center'>
-        {user && <UserProfileCard {...user} />}
-      </div>
 
       {repos.length > 0 ? (
-        <Row>
+        <div className='parent'>
           {repos.map((repo: any, index: number) => (
             <RepoCard {...repo} key={index} />
           ))}
-        </Row>
+        </div>
       ) : (
         <div className='h-50 py-5'>
           <h5>No Public Repo Found For This User</h5>

@@ -10,6 +10,7 @@ const initialState = {
   loading: false,
   repos: [],
   user: {},
+  error: null,
 };
 declare global {
   interface Window {

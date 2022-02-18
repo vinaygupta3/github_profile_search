@@ -1,5 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  createSearchParams,
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import {
   Badge,
   Button,
@@ -7,27 +14,63 @@ import {
   Form,
   FormGroup,
   Input,
-  Label,
-  Row,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
   Spinner,
 } from "reactstrap";
 import { GetSearchUsers } from "../redux/actions";
 import UserCard from "./common/UserCard";
+import { toast } from "react-toastify";
+import PaginationComponent from "./common/PaginationComponent";
 
 const Home: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchText, setSearchText] = useState<string>("");
-  const { users, total_count, loading } = useSelector((state: any) => ({
+  const [pageNo, setPageNo] = useState<any>(1);
+  const [perPage, setPerPage] = useState<any>(10);
+  const [totalPage, setTotalPages] = useState<any>(10);
+  const { users, total_count, loading, error } = useSelector((state: any) => ({
     users: state.users.items,
     total_count: state.users.total_count,
     loading: state.loading,
+    error: state.error,
   }));
   const handleChange = (event: any) => {
     setSearchText(event.target.value);
   };
   const handleSubmit = async () => {
-    dispatch(GetSearchUsers(searchText));
+    dispatch(GetSearchUsers(searchText, pageNo, perPage));
+    navigate({
+      pathname: location.pathname,
+      search: `?${createSearchParams({
+        q: searchText,
+        pageNo: "1",
+        perPage: "10",
+      })}`,
+    });
   };
+  const search = useLocation().search;
+  const querySearch = new URLSearchParams(search).get("q");
+  const pageno = new URLSearchParams(search).get("pageNo");
+  const perpage = new URLSearchParams(search).get("perPage");
+  useEffect(() => {
+    if (error) toast.error(error);
+  }, [error]);
+  useEffect(() => {
+    if (querySearch && pageno && perpage) {
+      setSearchText(querySearch);
+      setPageNo(Number(pageno));
+      setPerPage(Number(perpage));
+      dispatch(GetSearchUsers(querySearch, Number(pageno), Number(perpage)));
+    }
+  }, [querySearch, pageno, perpage, dispatch]);
+  useEffect(() => {
+    const totalNoPage = Math.ceil(total_count / Number(perpage));
+    setTotalPages(totalNoPage);
+  }, [total_count, perpage]);
   return (
     <Container className='mt-5'>
       <h3>Search Github User</h3>
@@ -57,19 +100,38 @@ const Home: React.FC = () => {
         <div className='d-flex justify-content-center align-items-center h-200'>
           <Spinner />
         </div>
-      ) : users.length > 0 ? (
-        <Badge color='success' className='mb-3 p-2'>
-          Total User Found : {total_count}
-        </Badge>
-      ) : null}
+      ) : (
+        <>
+          <Badge color='success' className='mb-3 p-2'>
+            Total User Found : {total_count}
+          </Badge>
+          {users.length > 0 && (
+            <Badge color='success' className='mb-3 p-2 mx-2'>
+              No of User Shown : {users.length}
+            </Badge>
+          )}
+        </>
+      )}
 
-      <div className='user_card'>
-        {users.length > 0
-          ? users.map((user: any, index: number) => (
+      {users.length > 0 && (
+        <>
+          <div className='user_card'>
+            {users.map((user: any, index: number) => (
               <UserCard {...user} key={index} />
-            ))
-          : ""}
-      </div>
+            ))}
+          </div>
+          <div className='d-flex justify-content-end'>
+            {total_count > 0 ? (
+              <PaginationComponent
+                pageNo={pageNo}
+                perPage={perPage}
+                searchText={searchText}
+                totalPage={totalPage}
+              />
+            ) : null}
+          </div>
+        </>
+      )}
     </Container>
   );
 };

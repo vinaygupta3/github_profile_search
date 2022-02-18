@@ -4,6 +4,7 @@ import Home from "./components/Home";
 import PageNotFound from "./components/PageNotFound";
 import Profile from "./components/Profile";
 import Readme from "./components/Readme";
+import { ToastContainer } from "react-toastify";
 
 const App: React.FC = () => {
   return (
@@ -19,6 +20,7 @@ const App: React.FC = () => {
           <Route element={<PageNotFound />} />
         </Routes>
       </div>
+      <ToastContainer autoClose={3000} hideProgressBar />
     </BrowserRouter>
   );
 };

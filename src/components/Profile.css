@@ -1,0 +1,6 @@
+.parent {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin: 1px 5px;
+  margin-top: 20px;
+}
