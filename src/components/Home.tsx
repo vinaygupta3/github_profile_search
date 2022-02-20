@@ -6,23 +6,27 @@ import {
   Badge,
   Button,
   Container,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
   Form,
   FormGroup,
   Input,
   Spinner,
 } from "reactstrap";
 import { GetSearchUsers } from "../redux/actions";
-import PaginationComponent from "./common/PaginationComponent";
 import UserCard from "./common/UserCard";
+import Pagination from "./Pagination";
 
 const Home: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [toggleButton, setToggleButton] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [pageNo, setPageNo] = useState<any>(1);
   const [perPage, setPerPage] = useState<any>(10);
-  const [totalPage, setTotalPages] = useState<any>(10);
   const { users, total_count, loading, error } = useSelector((state: any) => ({
     users: state.users.items,
     total_count: state.users.total_count,
@@ -32,16 +36,21 @@ const Home: React.FC = () => {
   const handleChange = (event: any) => {
     setSearchText(event.target.value);
   };
-  const handleSubmit = async () => {
-    dispatch(GetSearchUsers(searchText, pageNo, perPage));
-    navigate({
-      pathname: location.pathname,
-      search: `?${createSearchParams({
-        q: searchText,
-        pageNo: "1",
-        perPage: "10",
-      })}`,
-    });
+  const handleSubmit = async (event: any) => {
+    event.preventDefault();
+    if (searchText) {
+      dispatch(GetSearchUsers(searchText, pageNo, perPage));
+      navigate({
+        pathname: location.pathname,
+        search: `?${createSearchParams({
+          q: searchText,
+          pageNo: "1",
+          perPage: "10",
+        })}`,
+      });
+    } else {
+      toast.error("Can't Error blank");
+    }
   };
   const search = useLocation().search;
   const querySearch = new URLSearchParams(search).get("q");
@@ -51,7 +60,7 @@ const Home: React.FC = () => {
     if (error) toast.error(error);
   }, [error]);
   useEffect(() => {
-    if (querySearch && pageno && perpage) {
+    if (querySearch && pageno && perpage && searchText) {
       setSearchText(querySearch);
       setPageNo(Number(pageno));
       setPerPage(Number(perpage));
@@ -59,13 +68,18 @@ const Home: React.FC = () => {
     }
   }, [querySearch, pageno, perpage, dispatch]);
   useEffect(() => {
-    const totalNoPage = Math.ceil(total_count / Number(perpage));
-    setTotalPages(totalNoPage);
-  }, [total_count, perpage]);
+    if (searchText) {
+      navigate({
+        pathname: location.pathname,
+        search: `?q=${searchText}&pageNo=${pageNo}&perPage=${perPage}`,
+      });
+    }
+  }, [pageNo, perPage]);
+
   return (
     <Container className='mt-5'>
       <h3>Search Github User</h3>
-      <Form>
+      <Form onSubmit={handleSubmit}>
         <FormGroup>
           <div>
             <Input
@@ -111,14 +125,34 @@ const Home: React.FC = () => {
               <UserCard {...user} key={index} />
             ))}
           </div>
-          <div className='d-flex justify-content-end'>
+          <div className='d-flex justify-content-end align-items-center my-3'>
             {total_count > 0 ? (
-              <PaginationComponent
-                pageNo={pageNo}
-                perPage={perPage}
-                searchText={searchText}
-                totalPage={totalPage}
-              />
+              <>
+                <Pagination
+                  className='d-flex justify-content-end align-items-center'
+                  currentPage={pageNo}
+                  siblingCount={2}
+                  totalCount={total_count}
+                  pageSize={perPage}
+                  onPageChange={(page: any) => setPageNo(page)}
+                />
+                <Dropdown
+                  size='sm'
+                  isOpen={toggleButton}
+                  toggle={(e: any) => {
+                    setPerPage(Number(e.target.innerText));
+                    setToggleButton((prev) => !prev);
+                  }}
+                >
+                  <DropdownToggle caret>{perPage}</DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem>10</DropdownItem>
+                    <DropdownItem>25</DropdownItem>
+                    <DropdownItem>50</DropdownItem>
+                    <DropdownItem>100</DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </>
             ) : null}
           </div>
         </>

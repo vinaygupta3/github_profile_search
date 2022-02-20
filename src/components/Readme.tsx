@@ -40,7 +40,7 @@ const Readme = () => {
         </div>
       ) : (
         <div className='text-danger px-5 py-3'>
-          <p>No Readme.md File FoundFor this Repo</p>
+          <p>No Readme.md File Found For this Repo</p>
         </div>
       )}
     </Container>
